@@ -6,6 +6,7 @@ Provides high-level trackers:
 - draw_hand: Enhanced rendering of hand skeleton with distinct surgical fingertip highlights.
 """
 import os
+import sys
 import time
 import urllib.request
 import cv2
@@ -25,20 +26,32 @@ MODEL_URLS = {
 
 
 def model_path(model_name: str) -> str:
-    """Locates the MediaPipe model file in local or parent directories, or downloads if missing."""
-    cur_dir = os.path.dirname(os.path.abspath(__file__))
-    candidates = [
-        os.path.join(cur_dir, "models", model_name),
-        os.path.join(cur_dir, "..", "models", model_name),
-        os.path.join(cur_dir, "..", "..", "models", model_name),
-        os.path.join(r"C:\Users\LENOVO\Documents\5th Semester\HMI\models", model_name),
-        os.path.join(r"C:\vision_app\models", model_name),
-    ]
+    """Locates the MediaPipe model file in local, parent, or PyInstaller frozen directories, or downloads if missing."""
+    if getattr(sys, "frozen", False):
+        exe_dir = os.path.dirname(sys.executable)
+        meipass = getattr(sys, "_MEIPASS", exe_dir)
+        candidates = [
+            os.path.join(meipass, "models", model_name),
+            os.path.join(meipass, model_name),
+            os.path.join(exe_dir, "models", model_name),
+            os.path.join(exe_dir, model_name),
+        ]
+        dest_base = exe_dir
+    else:
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        dest_base = cur_dir
+        candidates = [
+            os.path.join(cur_dir, "models", model_name),
+            os.path.join(cur_dir, "..", "models", model_name),
+            os.path.join(cur_dir, "..", "..", "models", model_name),
+            os.path.join(r"C:\Users\LENOVO\Documents\5th Semester\HMI\models", model_name),
+            os.path.join(r"C:\vision_app\models", model_name),
+        ]
     for p in candidates:
         if os.path.isfile(p):
             return os.path.abspath(p)
 
-    dest_dir = os.path.join(cur_dir, "models")
+    dest_dir = os.path.join(dest_base, "models")
     os.makedirs(dest_dir, exist_ok=True)
     dest_file = os.path.join(dest_dir, model_name)
     if not os.path.isfile(dest_file):

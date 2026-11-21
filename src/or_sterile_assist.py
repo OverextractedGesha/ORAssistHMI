@@ -16,9 +16,15 @@ Features:
 import os
 import sys
 
-# Safe stdout/stderr redirection for pythonw.exe (GUI-only launcher without console)
+# Safe stdout/stderr redirection for pythonw.exe or frozen PyInstaller GUI builds
 if sys.stdout is None or sys.stderr is None:
-    _log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "or_sterile_assist.log")
+    if getattr(sys, "frozen", False):
+        _base_dir = os.path.dirname(sys.executable)
+        _log_path = os.path.join(_base_dir, "or_sterile_assist.log")
+    else:
+        _log_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
+        os.makedirs(_log_dir, exist_ok=True)
+        _log_path = os.path.join(_log_dir, "or_sterile_assist.log")
     try:
         _log_file = open(_log_path, "a", encoding="utf-8", buffering=1)
         if sys.stdout is None:
@@ -1412,6 +1418,19 @@ class ORSterileAssistApp:
 
 def main():
     """Application entry point."""
+    if "--self-check" in sys.argv or "--test" in sys.argv:
+        print("[OR-SterileAssist] Running automated self-check...")
+        root = tk.Tk()
+        root.withdraw()
+        app = ORSterileAssistApp(root)
+        print("[OR-SterileAssist] Tracker, audio, and CT phantom initialized successfully.")
+        app.next_slice()
+        app.cycle_window()
+        app.bookmark_current_slice()
+        app.on_closing()
+        print("[OR-SterileAssist] Self-check completed successfully (exit code 0).")
+        sys.exit(0)
+
     root = tk.Tk()
     app = ORSterileAssistApp(root)
     root.protocol("WM_DELETE_WINDOW", app.on_closing)

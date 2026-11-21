@@ -1,13 +1,19 @@
-# Python environment & cache
+# Python environments & bytecode caches
 .venv/
 venv/
 ENV/
 __pycache__/
 *.py[cod]
 *$py.class
+.pytest_cache/
 
-# Logs & temp
+# Logs & build artifacts
+logs/
 *.log
 *.tmp
+build/
+dist/
+
+# OS metadata
 .DS_Store
 Thumbs.db

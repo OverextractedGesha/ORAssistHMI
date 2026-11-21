@@ -14,6 +14,7 @@ Features:
 import io
 import json
 import os
+import sys
 import queue
 import tempfile
 import threading
@@ -172,7 +173,21 @@ class SpeechEngine:
     """Manages audio output (TTS, earcons, alarms) and input (ASR, VAD, calibration) safely in worker threads."""
 
     def __init__(self, models_dir=None, input_device=None):
-        self.models_dir = models_dir or os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
+        if getattr(sys, "frozen", False):
+            base_dir = os.path.dirname(sys.executable)
+            meipass = getattr(sys, "_MEIPASS", base_dir)
+            self.models_dir = models_dir or os.path.join(meipass, "models")
+            if not os.path.isdir(self.models_dir):
+                self.models_dir = os.path.join(base_dir, "models")
+        else:
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            if models_dir is not None:
+                self.models_dir = models_dir
+            elif os.path.isdir(os.path.join(base_dir, "..", "models")):
+                self.models_dir = os.path.abspath(os.path.join(base_dir, "..", "models"))
+            else:
+                self.models_dir = os.path.join(base_dir, "models")
+
         os.makedirs(self.models_dir, exist_ok=True)
         self.input_device = input_device
 
@@ -217,6 +232,14 @@ class SpeechEngine:
             os.path.join(os.path.dirname(os.path.abspath(__file__)), VOSK_MODEL_NAME),
             os.path.join(r"C:\Users\LENOVO\Documents\5th Semester\HMI\models", VOSK_MODEL_NAME),
         ]
+        if getattr(sys, "frozen", False):
+            base_dir = os.path.dirname(sys.executable)
+            meipass = getattr(sys, "_MEIPASS", base_dir)
+            candidate_paths.insert(0, os.path.join(meipass, "models", VOSK_MODEL_NAME))
+            candidate_paths.insert(0, os.path.join(meipass, VOSK_MODEL_NAME))
+            candidate_paths.insert(0, os.path.join(base_dir, "models", VOSK_MODEL_NAME))
+            candidate_paths.insert(0, os.path.join(base_dir, VOSK_MODEL_NAME))
+
         for p in candidate_paths:
             if os.path.isdir(p):
                 try:
@@ -237,6 +260,13 @@ class SpeechEngine:
             os.path.join(self.models_dir, PIPER_MODEL_NAME + ".onnx"),
             os.path.join(r"C:\Users\LENOVO\Documents\5th Semester\HMI\models", PIPER_MODEL_NAME + ".onnx"),
         ]
+        if getattr(sys, "frozen", False):
+            base_dir = os.path.dirname(sys.executable)
+            meipass = getattr(sys, "_MEIPASS", base_dir)
+            candidate_paths.insert(0, os.path.join(meipass, "models", PIPER_MODEL_NAME + ".onnx"))
+            candidate_paths.insert(0, os.path.join(meipass, PIPER_MODEL_NAME + ".onnx"))
+            candidate_paths.insert(0, os.path.join(base_dir, "models", PIPER_MODEL_NAME + ".onnx"))
+            candidate_paths.insert(0, os.path.join(base_dir, PIPER_MODEL_NAME + ".onnx"))
         for p in candidate_paths:
             if os.path.isfile(p):
                 try:

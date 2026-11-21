@@ -10,7 +10,10 @@ Tests all modular components of OR-SterileAssist:
 import unittest
 import numpy as np
 import os
+import sys
 import math
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
 import gesture_utils
 from gesture_utils import (

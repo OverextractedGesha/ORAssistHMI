@@ -1,13 +1,26 @@
-# OR-SterileAssist Dependencies (Multi-Python Compatible: 3.10 / 3.11 / 3.12 / 3.13 / 3.14)
-numpy>=1.24.0
-sounddevice>=0.4.6
-soundfile>=0.12.0
-pyttsx3>=2.90
-SpeechRecognition>=3.10.0
-opencv-python>=4.8.0
-mediapipe>=0.10.0
-pillow>=10.0.0
-edge-tts>=6.1.0
-gTTS>=2.4.0
-vosk>=0.3.45
-truststore>=0.8.0
+# OR-SterileAssist Dependencies
+# Audio Processing & Synthesis
+numpy==2.5.3
+sounddevice==0.5.6
+soundfile==0.14.0
+
+# Text-to-Speech (TTS)
+pyttsx3==2.99
+edge-tts==7.3.1
+gTTS==2.5.4
+piper-tts==1.8.0
+truststore==0.10.5
+
+# Speech Recognition (ASR)
+vosk==0.3.45
+SpeechRecognition==3.17.0
+
+# Computer Vision & Machine Learning
+opencv-contrib-python==5.0.0.93
+mediapipe==1.0.1
+pillow==12.3.0
+
+# GUI & Medical Imaging (v2 Architecture)
+PySide6>=6.8.0
+nibabel>=5.0.0
+

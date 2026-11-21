@@ -1,150 +1,139 @@
 ================================================================================
-                    OR-STERILEASSIST — PANDUAN PENGGUNAAN CEPAT
-               Sistem Multimodal Workstation Ruang Operasi Bedah Saraf
+                OR-STERILEASSIST v2 — PANDUAN PENGGUNAAN CEPAT
+         Workstation Ruang Operasi Bedah Saraf Nirsentuh (PySide6 + CT)
 ================================================================================
 
-Halo Rekan Tim / Anggota Kelompok!
-Paket ini sudah disiapkan lengkap agar bisa langsung dijalankan di laptop Windows 
-kalian tanpa perlu konfigurasi rumit. Model AI (MediaPipe Hand & Face) sudah 
-disertakan offline di dalam folder "models/".
+Paket rilis ini berisi OR-SterileAssist v2 (PySide6 Medical Workstation dengan
+volume Real Clinical Cranial Lesion CT, Slice 101/149) serta fallback v1
+(Tkinter). Model AI (MediaPipe Hand & Face) sudah disertakan offline di folder
+"models/", dan dataset CT klinis nyata tersedia di folder "assets/".
 
 --------------------------------------------------------------------------------
-1. CARA MEMULAI (HANYA 3 LANGKAH)
+1. CARA MEMULAI (QUICKSTART WINDOWS)
 --------------------------------------------------------------------------------
 
-[LANGKAH 1] EKSTRAK FILE ZIP
-- Pastikan file "OR_SterileAssist_SiapKirim.zip" sudah di-ekstrak terlebih dahulu!
-  (Klik kanan file ZIP -> "Extract All..." / "Ekstrak Semua").
-- PENTING: JANGAN menjalankan script langsung dari dalam file .ZIP karena Windows 
-  membuat folder sementara (temporary) yang tidak dapat menyimpan virtual environment.
-
-[LANGKAH 2] SETUP DEPENDENSI (Hanya Perlu Dilakukan Sekali Saja)
-- Pastikan laptop terhubung ke internet.
+[LANGKAH 1] SETUP DEPENDENSI (Hanya Perlu Dilakukan Sekali)
+- Pastikan laptop terhubung ke internet dan Python 3.10+ sudah terpasang
+  (saat instalasi Python, centang "[X] Add Python to PATH").
 - Dobel klik file:
     "1_SETUP_DEPENDENCIES.bat"
 - Script otomatis akan:
-  1. Memeriksa ketersediaan Python di laptop Anda (Python 3.10 / 3.11 / 3.12 / 3.13 / 3.14).
-  2. Membuat Virtual Environment lokal terisolasi (.venv) di dalam folder ini.
-  3. Menginstall semua library Python yang dibutuhkan secara otomatis.
-- Jika laptop belum memiliki Python, ikuti petunjuk yang muncul di layar:
-  Unduh di https://www.python.org/downloads/ dan CENTANG "[X] Add Python to PATH".
+  1. Membuat Virtual Environment lokal terisolasi (.venv) di folder ini.
+  2. Memperbarui pip dan menginstall seluruh dependensi di requirements.txt
+     (termasuk PySide6, nibabel, OpenCV, MediaPipe, SoundDevice, ASR/TTS).
 - Tunggu hingga muncul pesan "SETUP BERHASIL SELESAI!".
 
-[LANGKAH 3] JALANKAN APLIKASI
-- Anda dapat memilih salah satu cara berikut:
-  * Opsi A: Dobel klik "2_JALANKAN_APLIKASI.bat"
-    -> Menjalankan aplikasi bersamaan dengan jendela konsol/CMD (sangat berguna 
-       untuk melihat log deteksi kamera, frame rate, dan status audio).
-  * Opsi B: Dobel klik "3_JALANKAN_TANPA_CMD.vbs"
-    -> Menjalankan aplikasi secara langsung dan senyap (silent) tanpa jendela hitam CMD, 
-       tampilan bersih seperti aplikasi Windows profesional.
+[LANGKAH 2] JALANKAN APLIKASI
+- Untuk OR-SterileAssist v2 (Rekomendasi Utama - PySide6 Workstation):
+  * Opsi A (Dengan Log Konsol): Dobel klik "2_JALANKAN_APLIKASI_V2.bat"
+    -> Menjalankan src\or_sterile_assist_v2.py beserta jendela terminal log.
+  * Opsi B (Tanpa Jendela CMD): Dobel klik "3_JALANKAN_V2_TANPA_CMD.vbs"
+    -> Menjalankan workstation v2 secara senyap via pythonw.exe tanpa jendela CMD.
+- Untuk OR-SterileAssist v1 (Legacy Tkinter Fallback):
+  * Dobel klik "2_JALANKAN_APLIKASI_V1.bat" -> menjalankan src\or_sterile_assist.py.
+
+[LANGKAH 3] CITRA CT KLINIS DEFAULT (SLICE 101 / 149)
+- Saat v2 dibuka, sistem otomatis memuat volume Real Cranial Lesion CT
+  (149 irisan aksial 224x224, `assets/real_head_ct.npz`) dan langsung menuju
+  Slice 101 (posisi lesi fokal hiperdens, rentang lesi slice 41-136).
+- Anda dapat beralih antara "REAL CRANIAL CT", "SYNTHETIC PHANTOM" (60 slice),
+  atau memuat berkas `.nii` / `.nii.gz` melalui tombol di panel CT.
 
 --------------------------------------------------------------------------------
-2. PANDUAN GESTUR TANGAN (SURGICAL HAND GESTURES)
+2. PANDUAN 6 GESTUR TANGAN BEDAH (SURGICAL HAND GESTURES)
 --------------------------------------------------------------------------------
-Arahkan tangan menghadap kamera webcam Anda pada jarak sekitar 0.5 - 1.2 meter:
+Arahkan tangan menghadap webcam pada jarak sekitar 0.5 - 1.2 meter:
 
-1. 🤏 PINCH (Cubit Telunjuk & Ibu Jari)
-   - Tempelkan ujung jari telunjuk dan ibu jari, lalu gerakkan tangan naik/turun.
-   - Fungsi: Menjelajahi irisan CT scan (Slice scrolling maju / mundur).
+1. PINCH (Cubit Telunjuk & Ibu Jari)
+   - Tempelkan ujung ibu jari dan jari telunjuk, lalu gerakkan tangan naik/turun.
+   - Fungsi: Menggulir irisan CT scan maju / mundur (slice scrolling).
 
-2. ☝ 1 JARI TELUNJUK (Laser Pointer & Penanda Target Lesi)
-   - Acungkan hanya 1 jari telunjuk (seperti menunjuk).
-   - Fungsi Pointer: Crosshair biru muda (cyan) akan melacak titik tunjuk di layar CT.
-   - Fungsi Dwell Marking: Tahan telunjuk diam di posisi target lesi selama 1.4 detik.
-     Lingkaran progres hijau akan berputar dan otomatis menandai lesi patologis!
+2. 1 JARI TELUNJUK (Laser Pointer Bedah & Dwell Marking)
+   - Acungkan hanya 1 jari telunjuk (jari lain tertekuk).
+   - Pointer: Crosshair cyan mengikuti titik tunjuk pada viewport CT.
+   - Dwell (1,4 detik / 42 frame): Tahan telunjuk diam pada target untuk
+     menandai lesi patologis otomatis dengan retikel target.
 
-3. ✌ 2 JARI TELUNJUK & TENGAH (Ganti Preset Windowing CT)
-   - Acungkan 2 jari tegak selama 0.5 detik.
-   - Fungsi: Mengganti kontras CT secara siklis (Brain Window -> Bone Window -> Subdural).
+3. 2 JARI (Telunjuk & Tengah - Ganti Windowing CT)
+   - Tahan 2 jari tegak selama 0,5 detik (15 frame).
+   - Fungsi: Mengganti preset kontras CT (Brain -> Bone -> Subdural).
 
-4. 🤟 3 JARI (Bookmark Irisan CT)
-   - Acungkan 3 jari (ibu jari, telunjuk, tengah atau telunjuk, tengah, manis) selama 0.5 detik.
-   - Fungsi: Menyimpan / bookmark irisan CT saat ini untuk referensi cepat intra-operatif.
+4. 3 JARI (Bookmark Irisan CT)
+   - Tahan 3 jari tegak selama 0,5 detik (15 frame).
+   - Fungsi: Menandai/bookmark irisan CT aktif untuk referensi cepat.
 
-5. 🖖 4 JARI (Laporan Suara Status Pasien)
-   - Acungkan 4 jari selama 0.5 detik.
-   - Fungsi: Sistem akan membacakan rangkuman tanda vital pasien (Heart Rate, SpO2, Tekanan Darah).
+5. 4 JARI (Laporan Suara Tanda Vital)
+   - Tahan 4 jari tegak selama 0,5 detik (15 frame).
+   - Fungsi: Membacakan ringkasan tanda vital pasien (HR, SpO2, Tekanan Darah).
 
-6. 🖐 5 JARI (Telapak Terbuka - Sterile Gesture Lock)
-   - Buka seluruh 5 jari telapak tangan selama 0.5 detik.
-   - Fungsi: Mengunci / Menjeda (Pause) pembacaan gestur agar tidak terjadi input tak disengaja 
-     saat dokter sedang memegang instrumen bedah. Buka 5 jari lagi untuk Resume.
-
---------------------------------------------------------------------------------
-3. PANDUAN PERINTAH SUARA (VOICE COMMANDS)
---------------------------------------------------------------------------------
-Sistem dilengkapi pengenal suara dwibahasa (Bahasa Indonesia & Bahasa Inggris):
-
-Perintah Suara Bahasa Indonesia (Mode Default "ID Online"):
-- "iris berikutnya" / "naik"      -> Pindah ke irisan CT berikutnya
-- "iris sebelumnya" / "turun"     -> Pindah ke irisan CT sebelumnya
-- "jendela otak"                  -> Pindah ke preset Brain Window
-- "jendela tulang"                -> Pindah ke preset Bone Window
-- "jendela subdural"              -> Pindah ke preset Subdural Window
-- "simpan iris" / "bookmark"      -> Simpan bookmark irisan aktif
-- "tandai lesi"                   -> Tandai titik lesi pada posisi kursor saat ini
-- "hapus tanda"                   -> Bersihkan tanda lesi pada irisan aktif
-- "tanda vital" / "status pasien" -> Dengarkan rangkuman tanda vital lengkap
-- "detak jantung"                 -> Dengarkan nilai denyut jantung (HR)
-- "saturasi"                      -> Dengarkan persentase SpO2 darah
-- "tekanan darah"                 -> Dengarkan nilai tekanan darah arterial
-- "hening alarm"                  -> Matikan/bungkam alarm medis selama 2 menit (IEC 60601-1-8)
-- "jeda kamera" / "kunci gestur"  -> Kunci tracking gestur tangan
-- "lanjut kamera" / "buka gestur" -> Buka kembali tracking gestur
-- "bantuan"                       -> Panduan suara interaktif
+6. 5 JARI (Telapak Terbuka - Sterile Gesture Lock)
+   - Buka seluruh 5 jari selama 0,5 detik (15 frame).
+   - Fungsi: Mengunci / menjeda deteksi gestur agar tidak terjadi input
+     tidak disengaja saat memegang instrumen bedah. Ulangi untuk membuka kunci.
 
 --------------------------------------------------------------------------------
-4. KONTROL CADANGAN KEYBOARD & MOUSE (FAIL-SAFE REDUNDANCY)
+3. PANDUAN PERINTAH SUARA (BAHASA INDONESIA & INGGRIS)
 --------------------------------------------------------------------------------
-Untuk keandalan penuh, seluruh fitur dapat dikendalikan dengan tombol keyboard:
-- [SPASI]            : Kunci / Buka Deteksi Gestur (Gesture Lock)
-- [PANAH ATAS / BAWAH]: Navigasi Irisan CT (Next / Prev Slice)
-- [ANGKA 1]          : Preset Brain Window
-- [ANGKA 2]          : Preset Bone Window
-- [ANGKA 3]          : Preset Subdural Window
-- [HURUF B]          : Simpan Bookmark Irisan
-- [HURUF M]          : Tandai Titik Lesi Bedah (Mark Target)
-- [HURUF C]          : Hapus Tanda Lesi pada Irisan Aktif
-- [HURUF A]          : Heningkan Alarm Pasien 2 Menit (IEC 60601-1-8 Silence)
-- [HURUF V]          : Dengarkan Laporan Suara Tanda Vital
-- [HURUF H]          : Bantuan Suara
-- [ESC] / [HURUF Q]  : Keluar dari Aplikasi
+Sistem dilengkapi perlindungan Half-Duplex (mikrofon otomatis dibisukan saat
+sistem berbicara atau membunyikan alarm agar bebas feedback loop).
+Rincian lengkap ada di "VOICE_COMMANDS_TUTORIAL.txt".
+
+A. Perintah Suara Bahasa Indonesia (Mode: "ID Online"):
+- "iris berikutnya" / "naik"       -> Pindah ke irisan CT berikutnya
+- "iris sebelumnya" / "turun"      -> Pindah ke irisan CT sebelumnya
+- "jendela otak"                   -> Preset Brain Window (L:40 W:80)
+- "jendela tulang"                 -> Preset Bone Window (L:500 W:2000)
+- "jendela subdural"               -> Preset Subdural Window (L:70 W:200)
+- "simpan iris" / "bookmark"       -> Bookmark irisan aktif
+- "tandai lesi" / "tandai target"  -> Tandai lesi pada posisi kursor
+- "hapus tanda" / "bersihkan tanda"-> Hapus tanda lesi pada irisan aktif
+- "tanda vital" / "status pasien"  -> Bacakan ringkasan tanda vital
+- "detak jantung"                  -> Bacakan denyut jantung (HR)
+- "saturasi" / "oksigen"           -> Bacakan saturasi SpO2
+- "tekanan darah" / "tensi"        -> Bacakan tekanan darah arterial
+- "hening alarm" / "matikan alarm" -> Heningkan alarm 2 menit (IEC 60601-1-8)
+- "jeda kamera" / "kunci gestur"   -> Kunci pelacakan gestur
+- "lanjut kamera" / "buka gestur"  -> Aktifkan kembali pelacakan gestur
+- "bantuan"                        -> Panduan perintah suara
+
+B. Perintah Suara Bahasa Inggris (Mode: "EN Offline" - Vosk):
+- "next slice" / "next"            -> Irisan berikutnya
+- "previous slice" / "previous"    -> Irisan sebelumnya
+- "window brain" / "window bone" / "window subdural" -> Ganti preset CT
+- "bookmark slice" / "save slice"  -> Bookmark irisan aktif
+- "mark lesion" / "mark target"    -> Tandai lesi
+- "clear markers" / "clear"        -> Hapus tanda pada irisan aktif
+- "patient vitals" / "vitals"      -> Bacakan ringkasan tanda vital
+- "heart rate" / "oxygen" / "blood pressure" -> Bacakan parameter spesifik
+- "silence alarm" / "mute alarm"   -> Heningkan alarm 2 menit
+- "pause camera" / "resume camera" -> Kunci / buka pelacakan gestur
+- "help"                           -> Panduan suara
+
+C. Mode Dikte Klinis ("Dictation ID"):
+- Ucapkan catatan klinis bebas dalam Bahasa Indonesia untuk langsung dicatat
+  dengan timestamp ke log intra-operatif (dapat diekspor ke berkas .txt).
 
 --------------------------------------------------------------------------------
-5. FITUR BIOMEDIS UNGGULAN
+4. KONTROL KEYBOARD & MOUSE (CADANGAN REDUNDAN)
 --------------------------------------------------------------------------------
-1. Standar Alarm Medis IEC 60601-1-8:
-   Sintesis nada peringatan medis Low, Medium, dan High Priority burst secara matematis.
-2. Pitch Sonifikasi SpO2:
-   Tinggi nada denyut jantung merefleksikan tingkat saturasi oksigen (SpO2) pasien 
-   secara real-time (nada semakin turun jika saturasi oksigen menurun).
-3. Deteksi Kehadiran Wajah Dokter (BlazeFace Auto-Lock):
-   Jika dokter melangkah mundur atau berpaling jauh dari zona steril, sistem otomatis 
-   menghentikan eksekusi gestur untuk mencegah kesalahan input.
-4. Perlindungan Half-Duplex Akustik:
-   Mikrofon otomatis dimatikan sejenak ketika sistem sedang berbicara atau membunyikan 
-   alarm, mencegah suara sistem terdengar kembali ke mikrofon (anti-feedback loop).
+- [SPASI]                : Kunci / Buka Deteksi Gestur (Gesture Lock)
+- [PANAH KIRI/BAWAH/P]   : Irisan CT sebelumnya
+- [PANAH KANAN/ATAS/N]   : Irisan CT berikutnya
+- [W]                    : Siklus preset CT Window (Brain -> Bone -> Subdural)
+- [B]                    : Bookmark irisan aktif
+- [M]                    : Tandai lesi pada posisi kursor
+- [C]                    : Hapus tanda pada irisan aktif
+- [V]                    : Bacakan laporan tanda vital
+- [A]                    : Heningkan alarm 2 menit (IEC 60601-1-8)
+- [ESC] (di editor log)  : Kembalikan fokus keyboard dari catatan ke aplikasi
+- [Scroll Mouse di CT]   : Ganti irisan CT langsung
+- [Klik Mouse di CT]     : Tandai target lesi secara manual
 
 --------------------------------------------------------------------------------
-6. TROUBLESHOOTING & PERTANYAAN UMUM
+5. VERIFIKASI TEST OTOMATIS
 --------------------------------------------------------------------------------
-T: Kamera tidak muncul atau layar video hitam?
-J: Pastikan webcam laptop tidak sedang digunakan oleh aplikasi lain (Zoom, Teams, dsb). 
-   Gunakan dropdown "Kamera" di panel kanan atas untuk memilih ID kamera lain (0 atau 1).
-
-T: Suara alarm tidak berbunyi?
-J: Periksa output audio speaker Anda dan pastikan volume laptop tidak dalam kondisi Mute.
-
-T: Apakah bisa dijalankan tanpa koneksi internet?
-J: BISA. Model pengenal gestur dan wajah sudah tersimpan lokal di folder "models/". 
-   Untuk voice recognition offline, ubah mode suara di panel audio ke "EN Offline (Vosk)".
-
-T: Ingin menjalankan test otomatis?
-J: Buka terminal CMD di folder ini, lalu jalankan:
-   .venv\Scripts\python.exe test_or_sterile_assist.py
-   Semua 22 unit test akan dieksekusi secara otomatis.
-
-================================================================================
-                    Selamat Mencoba OR-SterileAssist!
+Dari folder ini (setelah menjalankan 1_SETUP_DEPENDENCIES.bat):
+  .venv\Scripts\python.exe -m unittest tests\test_or_sterile_assist.py -v
+  .venv\Scripts\python.exe -m unittest tests\test_or_sterile_assist_v2.py -v
+  .venv\Scripts\python.exe src\or_sterile_assist_v2.py --self-check
 ================================================================================

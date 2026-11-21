@@ -1,0 +1,475 @@
+================================================================================
+   OR-STERILEASSIST - VOICE COMMANDS & TUTORIAL CHEAT SHEET
+   Operating Room Sterile Touchless HMI Workstation (IEC 60601-1-8 Compliant)
+================================================================================
+File: VOICE_COMMANDS_TUTORIAL.txt
+Target: Video Tutorial & Live Demonstrations Teleprompter
+Compatibility: Windows Notepad / Clean ASCII (No Markdown)
+Engine: src/speech_engine.py | UI: src/ui_v2/speech_console.py
+
+--------------------------------------------------------------------------------
+TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+1. PRE-RECORDING SETUP & HARDWARE CALIBRATION CHECKLIST
+2. HALF-DUPLEX PROTOCOL & UI BADGE STATES
+3. ASR OPERATING MODES OVERVIEW
+4. COMPLETE INDONESIAN VOICE COMMANDS (MODE: ID Online)
+5. COMPLETE ENGLISH VOICE COMMANDS (MODE: EN Offline)
+6. CLINICAL DICTATION MODE (MODE: Dictation ID)
+7. STEP-BY-STEP VIDEO TUTORIAL DEMO SCRIPT (TELEPROMPTER-READY)
+8. TROUBLESHOOTING & OPERATOR HINTS
+
+
+================================================================================
+1. PRE-RECORDING SETUP & HARDWARE CALIBRATION CHECKLIST
+================================================================================
+Complete these checks before hitting record or beginning patient setup:
+
+[ ] 1. AUDIO INPUT VERIFICATION
+       - Ensure microphone / headset is connected and selected in Windows.
+       - Audio meter in GUI should register baseline ambient noise.
+
+[ ] 2. RUN 2-SECOND AMBIENT CALIBRATION
+       - Click button: [Calibrate (2s)] on the Voice Console.
+       - Operator action: Remain COMPLETELY SILENT for 2 seconds.
+       - System action: Samples ambient room noise floor (e.g., -56 dBFS) and
+         automatically sets the dynamic trigger threshold (typically +12 dBFS
+         above ambient, clamped between -55 dBFS and -25 dBFS).
+       - Verification: Ensure yellow threshold line in dBFS meter settles
+         neatly above background room hiss.
+
+[ ] 3. VERIFY MICROPHONE TOGGLE
+       - Button reads: [Mic ON] (Green / Nominal).
+       - Clicking toggles to [Mic OFF] (Red / Danger) to manually mute.
+
+[ ] 4. INTERNET CONNECTIVITY CHECK
+       - "ID Online" & "Dictation ID" require active internet (Google ASR).
+       - "EN Offline" runs locally via Vosk (or falls back to Google ASR).
+
+
+================================================================================
+2. HALF-DUPLEX PROTOCOL & UI BADGE STATES
+================================================================================
+OR-SterileAssist implements strict Half-Duplex acoustic feedback protection to
+prevent the microphone from hearing and re-triggering on its own TTS voice or
+high-priority IEC 60601-1-8 medical alarm earcons.
+
+UI BADGE READOUTS (Top-Right of Voice Console):
+
+  [LISTENING]     (Green)
+  - Microphone is active and awaiting surgeon speech.
+  - RULE: ONLY speak commands when this badge is GREEN.
+
+  [TTS SPEAKING]  (Amber)
+  - The workstation is currently vocalizing synthesized speech or playing
+    an auditory confirmation / alarm tone.
+  - The microphone input buffer is automatically purged and muted.
+  - RULE: PAUSE and DO NOT speak while this badge is displayed!
+
+  [MIC OFF]       (Red)
+  - Microphone manually muted by operator or hardware disconnected.
+
+
+================================================================================
+3. ASR OPERATING MODES OVERVIEW
+================================================================================
+Select via segmented buttons on the Speech Console:
+
+  [ID Online]    -> Google Web Speech (id-ID)
+                    Optimized for Indonesian surgical and CT viewport commands.
+                    Provides natural spoken Indonesian TTS responses.
+
+  [EN Offline]   -> Vosk Kaldi Recognizer (en-US)
+                    Constrained offline surgical grammar (zero latency, offline).
+                    Auto-falls back to Google en-US if Vosk model is loading.
+
+  [Dictation ID] -> Free-Form Speech-to-Text (id-ID)
+                    Transcribes clinical narratives directly into the
+                    Intra-Operative Clinical Log editor.
+
+
+================================================================================
+4. COMPLETE INDONESIAN VOICE COMMANDS (MODE: ID Online)
+================================================================================
+Wording exactly matches ID_COMMAND_PATTERNS in speech_engine.py.
+Any keyword in the list triggers the command and yields the spoken TTS reply.
+
++------------------+----------------------------------+-----------------------------------------------+
+| COMMAND ID       | ACCEPTED SPOKEN KEYWORDS         | SYSTEM SPOKEN TTS FEEDBACK                    |
++------------------+----------------------------------+-----------------------------------------------+
+| NEXT_SLICE       | iris berikutnya                  | "Iris berikutnya."                            |
+|                  | berikutnya                       |                                               |
+|                  | naik                             |                                               |
+|                  | maju                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PREV_SLICE       | iris sebelumnya                  | "Iris sebelumnya."                            |
+|                  | sebelumnya                       |                                               |
+|                  | turun                            |                                               |
+|                  | mundur                           |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_BRAIN     | jendela otak                     | "Jendela otak diaktifkan."                    |
+|                  | mode otak                        |                                               |
+|                  | otak                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_BONE      | jendela tulang                   | "Jendela tulang diaktifkan."                  |
+|                  | mode tulang                      |                                               |
+|                  | tulang                           |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_SUBDURAL  | jendela subdural                 | "Jendela subdural diaktifkan."                |
+|                  | mode subdural                    |                                               |
+|                  | subdural                         |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| BOOKMARK_SLICE   | simpan iris                      | "Iris berhasil disimpan."                     |
+|                  | bookmark                         |                                               |
+|                  | tanda iris                       |                                               |
+|                  | simpan                           |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| MARK_LESION      | tandai lesi                      | "Target lesi ditandai."                       |
+|                  | tandai target                    |                                               |
+|                  | tandai                           |                                               |
+|                  | lesi                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| CLEAR_MARKERS    | hapus tanda                      | "Tanda target dibersihkan."                   |
+|                  | hapus marker                     |                                               |
+|                  | bersihkan tanda                  |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PATIENT_VITALS   | tanda vital                      | "Membacakan ringkasan tanda vital."           |
+|                  | kondisi pasien                   | (followed by HR, SpO2, and NIBP readouts)    |
+|                  | status pasien                    |                                               |
+|                  | vital                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| HEART_RATE       | detak jantung                    | "Detak jantung normal."                       |
+|                  | nadi                             |                                               |
+|                  | jantung                          |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| OXYGEN           | saturasi                         | "Saturasi oksigen dipantau."                  |
+|                  | oksigen                          |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| BLOOD_PRESSURE   | tekanan darah                    | "Tekanan darah pasien."                       |
+|                  | tensi                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| SILENCE_ALARM    | hening alarm                     | "Alarm diheningkan dua menit."                |
+|                  | matikan alarm                    |                                               |
+|                  | senyap                           |                                               |
+|                  | diam                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PAUSE_CAMERA     | jeda kamera                      | "Pelacakan gestur dijeda."                    |
+|                  | kunci gestur                     |                                               |
+|                  | pause kamera                     |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| RESUME_CAMERA    | lanjut kamera                    | "Pelacakan gestur aktif."                     |
+|                  | resume kamera                    |                                               |
+|                  | aktifkan kamera                  |                                               |
+|                  | buka gestur                      |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| HELP             | bantuan                          | "Perintah suara: iris berikutnya, jendela     |
+|                  | tolong                           |  otak, bookmark, tandai lesi, atau tanda      |
+|                  | menu                             |  vital."                                      |
++------------------+----------------------------------+-----------------------------------------------+
+
+
+================================================================================
+5. COMPLETE ENGLISH VOICE COMMANDS (MODE: EN Offline)
+================================================================================
+Wording exactly matches EN_COMMAND_PATTERNS & EN_GRAMMAR in speech_engine.py.
+
++------------------+----------------------------------+-----------------------------------------------+
+| COMMAND ID       | ACCEPTED SPOKEN KEYWORDS         | SYSTEM SPOKEN TTS FEEDBACK                    |
++------------------+----------------------------------+-----------------------------------------------+
+| NEXT_SLICE       | next slice                       | "Next slice."                                 |
+|                  | next                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PREV_SLICE       | previous slice                   | "Previous slice."                             |
+|                  | previous                         |                                               |
+|                  | prev                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_BRAIN     | window brain                     | "Brain window."                               |
+|                  | brain window                     |                                               |
+|                  | brain                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_BONE      | window bone                      | "Bone window."                                |
+|                  | bone window                      |                                               |
+|                  | bone                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| WINDOW_SUBDURAL  | window subdural                  | "Subdural window."                            |
+|                  | subdural window                  |                                               |
+|                  | subdural                         |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| BOOKMARK_SLICE   | bookmark slice                   | "Slice bookmarked."                           |
+|                  | bookmark                         |                                               |
+|                  | save slice                       |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| MARK_LESION      | mark lesion                      | "Lesion target marked."                       |
+|                  | mark target                      |                                               |
+|                  | mark                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| CLEAR_MARKERS    | clear markers                    | "Markers cleared."                            |
+|                  | clear marker                     |                                               |
+|                  | clear                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PATIENT_VITALS   | patient vitals                   | "Reading patient vitals."                     |
+|                  | vitals summary                   | (followed by HR, SpO2, and NIBP readouts)    |
+|                  | vitals                           |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| HEART_RATE       | heart rate                       | "Heart rate status."                          |
+|                  | pulse                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| OXYGEN           | oxygen                           | "Oxygen saturation status."                   |
+|                  | saturation                       |                                               |
+|                  | spo2                             |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| BLOOD_PRESSURE   | blood pressure                   | "Blood pressure status."                      |
+|                  | bp                               |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| SILENCE_ALARM    | silence alarm                    | "Alarm silenced for two minutes."             |
+|                  | mute alarm                       |                                               |
+|                  | silence                          |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| PAUSE_CAMERA     | pause camera                     | "Gesture tracking paused."                    |
+|                  | lock gestures                    |                                               |
+|                  | pause                            |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| RESUME_CAMERA    | resume camera                    | "Gesture tracking resumed."                   |
+|                  | unlock gestures                  |                                               |
+|                  | resume                           |                                               |
++------------------+----------------------------------+-----------------------------------------------+
+| HELP             | help                             | "Commands: next slice, window brain, bookmark |
+|                  | commands                         |  slice, mark lesion, patient vitals."         |
++------------------+----------------------------------+-----------------------------------------------+
+
+
+================================================================================
+6. CLINICAL DICTATION MODE (MODE: Dictation ID)
+================================================================================
+Purpose: Hands-free intra-operative surgical note recording without touching
+keyboard or mouse in the sterile zone.
+
+How It Operates:
+1. Select [Dictation ID] on the Speech Console.
+2. Confirm badge reads [LISTENING].
+3. Speak surgical findings clearly in Indonesian.
+4. Voice engine captures phrase on 0.7-second natural speech pause.
+5. Transcribed text is timestamped and automatically appended to:
+   "INTRA-OPERATIVE CLINICAL LOG".
+
+REAL-WORLD CLINICAL PHRASES TO SPEAK IN DEMO:
+
+  Example 1: Craniotomy Opening
+  "Insisi kraniektomi frontotemporoparietal sinistra telah dilakukan. Dura dibuka secara melingkar. Perdarahan epidural minimal terkontrol."
+
+  Example 2: Lesion Identification
+  "Lesi tumor teridentifikasi pada lobus frontal kanan ukuran dua kali tiga sentimeter berbatas tegas."
+
+  Example 3: Hemostasis & Closure
+  "Hemostasis tercapai dengan bipolar dan surgicel. Tidak ada perdarahan aktif. Persiapan penutupan dura mater."
+
+LOG CONTROLS IN WORKSTATION:
+- [Speak Log]    : Uses Indonesian neural TTS to read back all logged notes.
+- [Export (.txt)]: Saves complete timestamped surgical record to file.
+- [Esc Key]      : Exits text cursor focus back to workstation hotkeys.
+
+
+================================================================================
+7. STEP-BY-STEP VIDEO TUTORIAL DEMO SCRIPT (TELEPROMPTER-READY)
+================================================================================
+Read aloud during recording. Cues indicate exact physical actions.
+
+--------------------------------------------------------------------------------
+SCENE 1: INTRODUCTION & AMBIENT CALIBRATION (Time: 00:00 - 00:35)
+--------------------------------------------------------------------------------
+[ACTION]: Point camera / screen capture to Speech Console panel.
+[SPEECH]:
+"Halo rekan-rekan klinisi dan penguji HMI. Pada demonstrasi ini, kita akan
+menguji sistem kendali suara nirsentuh OR-SterileAssist.
+
+Sebelum memulai tindakan steril, kita melakukan kalibrasi mikrofon terhadap
+noise bising ruangan operasi.
+
+Perhatikan tombol Calibrate di panel kanan."
+
+[ACTION]: Click [Calibrate (2s)]. Remain silent for 2 seconds.
+[SPEECH]:
+"Saat tombol ditekan, kita hening sejenak selama dua detik. Sistem secara
+otomatis mengukur ambient noise floor dan menyetel threshold pemicu suara
+secara adaptif.
+
+Perhatikan juga badge status di kanan atas:
+Saat berwarna hijau, statusnya adalah [LISTENING], yang berarti sistem siap
+menerima komando suara kita."
+
+
+--------------------------------------------------------------------------------
+SCENE 2: CT SLICE NAVIGATION & WINDOW PRESETS (ID Online) (Time: 00:35 - 01:25)
+--------------------------------------------------------------------------------
+[ACTION]: Ensure [ID Online] is selected. Verify badge is [LISTENING].
+[SPEECH]:
+"Kita mulai dengan navigasi citra aksial kepala pasien."
+
+[SPOKEN COMMAND]: "iris berikutnya"
+[SYSTEM FEEDBACK]: TTS: "Iris berikutnya." (Slice moves forward)
+[NOTE]: Notice badge temporarily changes to [TTS SPEAKING], then back to [LISTENING].
+
+[SPOKEN COMMAND]: "iris berikutnya"
+[SYSTEM FEEDBACK]: TTS: "Iris berikutnya."
+
+[SPOKEN COMMAND]: "iris sebelumnya"
+[SYSTEM FEEDBACK]: TTS: "Iris sebelumnya." (Slice moves backward)
+
+[SPEECH]:
+"Sekarang kita ubah preset windowing radiologi untuk mengamati struktur tulang
+dan perdarahan subdural."
+
+[SPOKEN COMMAND]: "jendela tulang"
+[SYSTEM FEEDBACK]: TTS: "Jendela tulang diaktifkan." (Bone window applied)
+
+[SPOKEN COMMAND]: "jendela subdural"
+[SYSTEM FEEDBACK]: TTS: "Jendela subdural diaktifkan." (Subdural window applied)
+
+[SPOKEN COMMAND]: "jendela otak"
+[SYSTEM FEEDBACK]: TTS: "Jendela otak diaktifkan." (Brain window restored)
+
+
+--------------------------------------------------------------------------------
+SCENE 3: TARGET LESION MARKING & BOOKMARKS (Time: 01:25 - 02:05)
+--------------------------------------------------------------------------------
+[SPEECH]:
+"Saat dokter bedah menemukan anomali atau lesi pada irisan CT, koordinat target
+dapat ditandai dan disimpan ke memori bookmark secara instan tanpa menyentuh mouse."
+
+[SPOKEN COMMAND]: "tandai lesi"
+[SYSTEM FEEDBACK]: TTS: "Target lesi ditandai." (Target reticle locked on viewport)
+
+[SPOKEN COMMAND]: "simpan iris"
+[SYSTEM FEEDBACK]: TTS: "Iris berhasil disimpan." (Slice index added to bookmark chips)
+
+[SPOKEN COMMAND]: "hapus tanda"
+[SYSTEM FEEDBACK]: TTS: "Tanda target dibersihkan." (Marker cleared)
+
+
+--------------------------------------------------------------------------------
+SCENE 4: PATIENT VITALS & ALARM SILENCE (Time: 02:05 - 02:50)
+--------------------------------------------------------------------------------
+[SPEECH]:
+"Untuk keselamatan pasien sesuai standar IEC 60601-1-8, dokter bedah dapat
+meminta pembacaan parameter hemodinamik tanpa mengalihkan pandangan dari
+lapangan bedah."
+
+[SPOKEN COMMAND]: "tanda vital"
+[SYSTEM FEEDBACK]: TTS: "Membacakan ringkasan tanda vital." (Reads HR, SpO2, BP)
+
+[SPOKEN COMMAND]: "detak jantung"
+[SYSTEM FEEDBACK]: TTS: "Detak jantung normal."
+
+[SPOKEN COMMAND]: "saturasi"
+[SYSTEM FEEDBACK]: TTS: "Saturasi oksigen dipantau."
+
+[SPEECH]:
+"Jika alarm medis fisiologis berbunyi dan tim sedang menangani situasi kritis,
+kita dapat membungkam alarm selama dua menit via perintah suara."
+
+[SPOKEN COMMAND]: "hening alarm"
+[SYSTEM FEEDBACK]: TTS: "Alarm diheningkan dua menit." (Alarm muted for 120s)
+
+
+--------------------------------------------------------------------------------
+SCENE 5: GESTURE TRACKING LOCK & HELP MENU (Time: 02:50 - 03:30)
+--------------------------------------------------------------------------------
+[SPEECH]:
+"Saat dokter bedah menggunakan instrumen bedah fisik dan tidak ingin gestur
+tangan memicu kursor secara tak sengaja, pelacakan kamera dapat dikunci."
+
+[SPOKEN COMMAND]: "jeda kamera"
+[SYSTEM FEEDBACK]: TTS: "Pelacakan gestur dijeda." (Vision HUD shows GESTURE LOCKED)
+
+[SPEECH]:
+"Ketika siap berinteraksi kembali, kita aktifkan kembali pelacakan gestur."
+
+[SPOKEN COMMAND]: "lanjut kamera"
+[SYSTEM FEEDBACK]: TTS: "Pelacakan gestur aktif." (Vision HUD tracking resumes)
+
+[SPOKEN COMMAND]: "bantuan"
+[SYSTEM FEEDBACK]: TTS: "Perintah suara: iris berikutnya, jendela otak, bookmark, tandai lesi, atau tanda vital."
+
+
+--------------------------------------------------------------------------------
+SCENE 6: BILINGUAL ENGLISH MODE (EN Offline) (Time: 03:30 - 04:15)
+--------------------------------------------------------------------------------
+[ACTION]: Click segmented button [EN Offline] on the console.
+[SPEECH]:
+"Untuk kolaborasi bedah internasional atau saat jaringan internet terputus,
+OR-SterileAssist mendukung pengenalan suara offline berbahasa Inggris
+menggunakan mesin Vosk Kaldi."
+
+[SPOKEN COMMAND]: "next slice"
+[SYSTEM FEEDBACK]: TTS: "Next slice."
+
+[SPOKEN COMMAND]: "window bone"
+[SYSTEM FEEDBACK]: TTS: "Bone window."
+
+[SPOKEN COMMAND]: "window brain"
+[SYSTEM FEEDBACK]: TTS: "Brain window."
+
+[SPOKEN COMMAND]: "patient vitals"
+[SYSTEM FEEDBACK]: TTS: "Reading patient vitals."
+
+
+--------------------------------------------------------------------------------
+SCENE 7: INTRA-OPERATIVE CLINICAL DICTATION (Time: 04:15 - 05:00)
+--------------------------------------------------------------------------------
+[ACTION]: Click segmented button [Dictation ID] on the console.
+[SPEECH]:
+"Fitur terakhir adalah Intra-Operative Clinical Dictation.
+Dokter bedah dapat mendiktekan catatan operasi secara bebas dan langsung
+tercatat ke lembar rekam medis elektronik."
+
+[SPOKEN DICTATION (Speak clearly)]:
+"Insisi kraniektomi frontotemporoparietal sinistra telah dilakukan. Dura dibuka secara melingkar. Perdarahan epidural minimal terkontrol."
+
+[ACTION]: Show the text appearing live in the "INTRA-OPERATIVE CLINICAL LOG" box.
+[SPEECH]:
+"Perhatikan teks hasil dikte langsung masuk ke kotak catatan klinis secara rapi.
+Kita juga dapat memverifikasi isi log dengan menekan tombol Speak Log."
+
+[ACTION]: Click [Speak Log].
+[SYSTEM FEEDBACK]: High-quality neural TTS reads back the entire surgical log.
+
+[ACTION]: Click [Export (.txt)].
+[SPEECH]:
+"Catatan operasi ini dapat langsung diekspor ke file teks untuk integrasi SIMRS."
+
+
+--------------------------------------------------------------------------------
+SCENE 8: SUMMARY & DEMO CONCLUSION (Time: 05:00 - 05:25)
+--------------------------------------------------------------------------------
+[SPEECH]:
+"Demikian alur kendali suara pada OR-SterileAssist. Dengan kombinasi
+pengenalan dwibahasa, proteksi half-duplex otomatis, dan pendiktean klinis,
+antarmuka ini memenuhi seluruh aspek aseptik ruang bedah modern.
+Terima kasih."
+
+
+================================================================================
+8. TROUBLESHOOTING & OPERATOR HINTS
+================================================================================
+Issue: System repeats or loops speech back to itself.
+Cause: Speaking too quickly while TTS is talking.
+Fix:   Wait for the badge to turn GREEN [LISTENING] before speaking!
+
+Issue: Words appear on screen in "HEARD:" but command doesn't execute.
+Cause: Spoken phrase didn't contain an exact recognized keyword from the table.
+Fix:   Stick to concise triggers: "iris berikutnya", "jendela otak", "simpan".
+
+Issue: High ambient noise (suction / cautery) causes false triggers.
+Cause: Threshold too low.
+Fix:   Hit [Calibrate (2s)] while suction machine is idling, or manually mute
+       via [Mic ON/OFF] when not issuing commands.
+
+Issue: English Vosk recognizer unresponsive.
+Cause: Vosk English model folder missing or still downloading.
+Fix:   System auto-falls back to online Google en-US recognition without
+       freezing the interface. Ensure internet connection is active.
+
+================================================================================
+                         END OF TUTORIAL CHEAT SHEET
+================================================================================
+

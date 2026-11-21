@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title OR-SterileAssist - Touchless CT ^& Vital Workstation
+title OR-SterileAssist v2 - Medical Workstation (PySide6)
 color 0f
 cd /d "%~dp0"
 
@@ -16,7 +16,7 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
     echo 1. Tutup jendela ini.
     echo 2. Dobel klik file "1_SETUP_DEPENDENCIES.bat" di folder ini.
     echo 3. Tunggu hingga proses setup dependensi selesai (ada pesan sukses).
-    echo 4. Jalankan kembali file "2_JALANKAN_APLIKASI.bat" ini.
+    echo 4. Jalankan kembali file "2_JALANKAN_APLIKASI_V2.bat" ini.
     echo.
     echo ===============================================================================
     pause
@@ -24,13 +24,13 @@ if not exist "%~dp0.venv\Scripts\python.exe" (
 )
 
 echo ===============================================================================
-echo          Memulai OR-SterileAssist (Intra-Operative Multimodal Workstation)
+echo      Memulai OR-SterileAssist v2 (PySide6 Medical Workstation - ETS HMI)
 echo ===============================================================================
 echo [INFO] Menjalankan aplikasi dengan Python Virtual Environment (.venv)...
 echo [INFO] Jangan menutup jendela konsol ini jika Anda ingin melihat log sistem.
 echo.
 
-"%~dp0.venv\Scripts\python.exe" "%~dp0or_sterile_assist.py"
+"%~dp0.venv\Scripts\python.exe" "%~dp0src\or_sterile_assist_v2.py"
 
 if %errorlevel% neq 0 (
     echo.

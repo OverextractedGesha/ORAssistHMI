@@ -1,10 +1,10 @@
 @echo off
 setlocal EnableDelayedExpansion
-title OR-SterileAssist - Setup Dependensi Otomatis
+title OR-SterileAssist v2 - Setup Dependensi Otomatis
 color 0b
 
 echo ===============================================================================
-echo          OR-SterileAssist: Setup Virtual Environment ^& Dependensi
+echo       OR-SterileAssist v2: Setup Virtual Environment ^& Dependensi
 echo ===============================================================================
 echo.
 echo Sedang memeriksa instalasi Python di sistem Windows Anda...
@@ -80,11 +80,11 @@ if %errorlevel% neq 0 (
 )
 echo.
 
-:: 5. Install requirements
+:: 5. Install requirements (termasuk PySide6, nibabel, mediapipe, vosk, dll.)
 echo [Langkah 3/3] Mengunduh dan menginstall dependensi (requirements.txt)...
 echo (Proses ini memerlukan koneksi internet aktif. Estimasi: 1 - 3 menit)
 echo.
-"%~dp0.venv\Scripts\pip.exe" install -r "%~dp0requirements.txt"
+"%~dp0.venv\Scripts\python.exe" -m pip install -r "%~dp0requirements.txt"
 if %errorlevel% neq 0 (
     color 0c
     echo.
@@ -102,18 +102,22 @@ echo ===========================================================================
 echo                         SETUP BERHASIL SELESAI!
 echo ===============================================================================
 echo.
-echo Semua library dan model offline sudah siap digunakan.
+echo Semua library (PySide6, nibabel, MediaPipe, SoundDevice, ASR/TTS) dan aset
+echo CT serta model offline sudah siap digunakan.
 echo.
 echo Sekarang Anda bisa langsung menjalankan aplikasi melalui salah satu file berikut:
 echo.
-echo 1. "2_JALANKAN_APLIKASI.bat"
-echo    -^> Menjalankan aplikasi dengan jendela terminal (bagus untuk melihat log).
+echo 1. "2_JALANKAN_APLIKASI_V2.bat"
+echo    -^> Menjalankan Workstation v2 (PySide6) dengan jendela konsol/log.
 echo.
-echo 2. "3_JALANKAN_TANPA_CMD.vbs"
-echo    -^> Menjalankan aplikasi secara langsung tanpa jendela hitam terminal (bersih).
+echo 2. "3_JALANKAN_V2_TANPA_CMD.vbs"
+echo    -^> Menjalankan Workstation v2 (PySide6) secara senyap tanpa jendela CMD.
 echo.
-echo Petunjuk gestur ^& perintah suara lengkap ada di:
-echo    "PETUNJUK_PENGGUNAAN_TEMAN.txt"
+echo 3. "2_JALANKAN_APLIKASI_V1.bat"
+echo    -^> Menjalankan versi v1 (Tkinter legacy fallback).
+echo.
+echo Petunjuk lengkap tersedia di:
+echo    "PETUNJUK_PENGGUNAAN.txt" dan "VOICE_COMMANDS_TUTORIAL.txt"
 echo ===============================================================================
 echo.
 pause
